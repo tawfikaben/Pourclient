@@ -1,765 +1,677 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DAR HASSNA - Système de Commande</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f8f8f8;
-        }
-        .food-item {
-            transition: all 0.3s ease;
-        }
-        .order-status-new {
-            background-color: #FEF3C7;
-            color: #92400E;
-        }
-        .order-status-preparing {
-            background-color: #BFDBFE;
-            color: #1E40AF;
-        }
-        .order-status-ready {
-            background-color: #D1FAE5;
-            color: #065F46;
-        }
-        .order-status-delivered {
-            background-color: #E5E7EB;
-            color: #4B5563;
-        }
-        .input-error {
-            border-color: #EF4444;
-            animation: shake 0.5s;
-        }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-        .restaurant-name {
-            cursor: pointer;
-            user-select: none;
-            font-family: 'Georgia', serif;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: #5a4a42;
-        }
-        .header-container {
-            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
-            border-bottom: 2px solid #d4a762;
-            text-align: center;
-            padding: 1.5rem;
-        }
-        .date-display {
-            color: #7a6b5e;
-            font-weight: 500;
-            margin: 0.5rem 0;
-            font-size: 0.875rem;
-        }
-        .main-title {
-            font-family: 'Georgia', serif;
-            color: #5a4a42;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            position: relative;
-            padding-bottom: 10px;
-            font-size: 2rem;
-            font-weight: bold;
-            margin: 0;
-        }
-        .main-title:after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 2px;
-            background-color: #d4a762;
-        }
-        .menu-title {
-            background-color: #5a4a42;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            display: inline-block;
-            margin-top: 1rem;
-            font-weight: bold;
-        }
-        .menu-section-title {
-            font-family: 'Georgia', serif;
-            color: #5a4a42;
-            border-bottom: 1px solid #d4a762;
-            padding-bottom: 5px;
-            font-size: 1.25rem;
-            font-weight: bold;
-        }
-        .add-to-order {
-            background-color: #8B4513;
-            transition: all 0.3s ease;
-        }
-        .add-to-order:hover {
-            background-color: #6B3410;
-            transform: translateY(-2px);
-        }
-        .submit-order-btn {
-            background-color: #8B4513;
-            transition: all 0.3s ease;
-        }
-        .submit-order-btn:hover {
-            background-color: #6B3410;
-            transform: translateY(-2px);
-        }
-        .food-item-card {
-            border: 1px solid #d4a762;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dar Hassna - Gestion des Commandes et Menu</title>
+  <style>
+    :root {
+      --color-primary: #d35400;
+      --color-secondary: #5d4037;
+      --color-pending: #856404;
+      --color-preparing: #004085;
+      --color-ready: #155724;
+      --color-delivered: #383d41;
+      --color-danger: #dc3545;
+      --color-light: #f8f1e9;
+    }
+    
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: var(--color-light);
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    
+    /* Styles pour les commandes */
+    #ordersSection {
+      display: block;
+    }
+    
+    #menuSection {
+      display: none;
+    }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    .tab-buttons {
+      display: flex;
+      margin-bottom: 20px;
+    }
+    
+    .tab-btn {
+      padding: 10px 20px;
+      background-color: #eee;
+      border: none;
+      cursor: pointer;
+      margin-right: 5px;
+    }
+    
+    .tab-btn.active {
+      background-color: var(--color-primary);
+      color: white;
+    }
+    
+    /* Styles communs pour les commandes et le menu */
+    .stats-bar {
+      display: flex;
+      justify-content: space-around;
+      background-color: #fff;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    .stat-item {
+      text-align: center;
+      padding: 0 15px;
+    }
+    
+    .stat-value {
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+    
+    .pending { color: var(--color-pending); }
+    .preparing { color: var(--color-preparing); }
+    .ready { color: var(--color-ready); }
+    .delivered { color: var(--color-delivered); }
+    
+    /* Styles spécifiques aux commandes */
+    .commandes-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+      gap: 15px;
+    }
+    
+    .commande {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      position: relative;
+    }
+    
+    .commande-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    
+    .table-number {
+      font-weight: bold;
+      color: var(--color-primary);
+      font-size: 1.2em;
+    }
+    
+    .order-time {
+      color: #777;
+      font-size: 0.9em;
+    }
+    
+    .order-items {
+      margin: 10px 0;
+    }
+    
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+    
+    .item-quantity {
+      font-weight: bold;
+      margin-right: 5px;
+    }
+    
+    .order-total {
+      font-weight: bold;
+      text-align: right;
+      margin: 10px 0;
+    }
+    
+    .order-status {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed #ddd;
+    }
+    
+    .status-select {
+      width: 100%;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      margin-top: 5px;
+    }
+    
+    .delete-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: var(--color-danger);
+      color: white;
+      border: none;
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    /* Styles spécifiques au menu */
+    .menu-items {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    
+    .menu-item {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      position: relative;
+    }
+    
+    .item-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    
+    .item-name {
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+    
+    .item-price {
+      color: var(--color-primary);
+      font-weight: bold;
+      margin: 10px 0;
+    }
+    
+    .item-actions {
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .edit-btn, .delete-btn {
+      padding: 5px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .edit-btn {
+      background-color: #f0ad4e;
+      color: white;
+    }
+    
+    .add-item-btn {
+      background-color: var(--color-primary);
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .modal-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      width: 80%;
+      max-width: 500px;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    
+    .cancel-btn, .save-btn {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .cancel-btn {
+      background-color: #ccc;
+    }
+    
+    .save-btn {
+      background-color: var(--color-primary);
+      color: white;
+    }
+    
+    .image-preview {
+      max-width: 100%;
+      max-height: 200px;
+      margin-top: 10px;
+      display: none;
+    }
+  </style>
 </head>
 <body>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
-
-    <div id="app" class="min-h-screen">
-        <!-- Customer View -->
-        <div id="customer-view">
-            <header class="header-container shadow-md">
-                <h1 class="main-title restaurant-name">DAR HASSNA</h1>
-                <div class="date-display">
-                    <script>
-                        const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-                        const today = new Date();
-                        document.write(today.getDate() + " " + months[today.getMonth()] + ", " + today.getFullYear());
-                    </script>
-                </div>
-                <div class="menu-title">
-                    لائحة الطعام اليومية
-                </div>
-            </header>
-
-            <main class="container mx-auto p-4 mt-6">
-                <!-- Menu Sections -->
-                <div id="menu-container">
-                    <!-- Menu items loaded from Firebase -->
-                </div>
-
-                <!-- Order Summary -->
-                <div class="mt-8 bg-white p-4 rounded-lg shadow food-item-card">
-                    <h3 class="text-lg font-bold mb-2 text-[#5a4a42]">Votre Commande</h3>
-                    <div id="order-items" class="mb-3">
-                        <p class="text-gray-500">Votre panier est vide</p>
-                    </div>
-                    <div class="flex justify-between border-t border-[#d4a762] pt-2">
-                        <span class="font-bold text-[#5a4a42]">Total:</span>
-                        <span id="order-total" class="font-bold">0 DH</span>
-                    </div>
-                    <button id="submit-order" class="submit-order-btn w-full mt-4 text-white py-2 rounded hover:bg-[#6B3410]">
-                        Commander
-                    </button>
-                </div>
-            </main>
-        </div>
-
-        <!-- Admin Dashboard (Hidden by default) -->
-        <div id="admin-dashboard" class="hidden">
-            <header class="bg-white shadow-md p-4 flex justify-between items-center">
-                <h1 class="text-xl font-bold text-[#5a4a42]">Tableau de Bord</h1>
-                <button id="logout-btn" class="bg-red-500 text-white px-3 py-1 rounded">
-                    Déconnexion
-                </button>
-            </header>
-
-            <div class="container mx-auto p-4">
-                <!-- Orders Section -->
-                <div class="mb-8">
-                    <h2 class="text-lg font-bold mb-4 text-[#5a4a42]">Commandes en Cours</h2>
-                    <div id="orders-list" class="space-y-3">
-                        <!-- Orders loaded from Firebase -->
-                    </div>
-                </div>
-
-                <!-- Menu Management -->
-                <div>
-                    <h2 class="text-lg font-bold mb-4 text-[#5a4a42]">Gestion du Menu</h2>
-                    <div id="menu-editor">
-                        <!-- Menu editor loaded from Firebase -->
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Table Number Modal -->
-        <div id="table-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
-            <div class="bg-white p-6 rounded-lg w-80 food-item-card">
-                <h3 class="text-lg font-bold mb-4 text-[#5a4a42]">Numéro de Table</h3>
-                <input type="number" id="table-number" class="w-full p-2 border border-[#d4a762] rounded mb-2" placeholder="Entrez le numéro de table" min="1">
-                <p id="table-error" class="text-red-500 text-sm mb-3 hidden">Veuillez entrer un numéro de table valide</p>
-                <div class="flex justify-end space-x-2">
-                    <button id="cancel-order" class="px-4 py-2 bg-gray-200 rounded">Annuler</button>
-                    <button id="confirm-order" class="px-4 py-2 bg-[#5a4a42] text-white rounded">Confirmer</button>
-                </div>
-            </div>
-        </div>
+  <div class="container">
+    <div class="tab-buttons">
+      <button class="tab-btn active" onclick="showSection('orders')">Commandes</button>
+      <button class="tab-btn" onclick="showSection('menu')">Menu</button>
     </div>
+    
+    <!-- Section des Commandes -->
+    <div id="ordersSection">
+      <div class="header">
+        <h1>Commandes - Dar Hassna</h1>
+        <div class="clock" id="liveClock"></div>
+      </div>
+      
+      <div class="stats-bar">
+        <div class="stat-item">
+          <div class="stat-value pending" id="pending-count">0</div>
+          <div>En attente</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value preparing" id="preparing-count">0</div>
+          <div>En préparation</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value ready" id="ready-count">0</div>
+          <div>Prêtes</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value delivered" id="delivered-count">0</div>
+          <div>Livrées</div>
+        </div>
+      </div>
+      
+      <div class="commandes-container" id="liste-commandes"></div>
+    </div>
+    
+    <!-- Section du Menu -->
+    <div id="menuSection">
+      <div class="header">
+        <h1>Gestion du Menu</h1>
+        <button class="add-item-btn" id="addItemBtn">+ Ajouter un plat</button>
+      </div>
+      
+      <div class="menu-items" id="menuItemsContainer"></div>
+    </div>
+  </div>
 
-    <script>
-        // Configuration Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyDpSF4J0bsd6T0ImMpse0KQQRADaxiYUQw",
-            authDomain: "darhassna-484c3.firebaseapp.com",
-            databaseURL: "https://darhassna-484c3-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "darhassna-484c3",
-            storageBucket: "darhassna-484c3.firebasestorage.app",
-            messagingSenderId: "141393162149",
-            appId: "1:141393162149:web:0717227eac221f5ddfc24c"
-        };
+  <!-- Modal pour le Menu -->
+  <div class="modal" id="itemModal">
+    <div class="modal-content">
+      <h2 id="modalTitle">Ajouter un nouveau plat</h2>
+      
+      <div class="form-group">
+        <label for="itemName">Nom du plat</label>
+        <input type="text" id="itemName" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="itemPrice">Prix (MAD)</label>
+        <input type="number" id="itemPrice" min="0" step="0.01" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="itemDescription">Description</label>
+        <textarea id="itemDescription" rows="3"></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="itemImage">Image</label>
+        <input type="file" id="itemImage" accept="image/*">
+        <img id="imagePreview" class="image-preview" alt="Aperçu de l'image">
+      </div>
+      
+      <div class="form-actions">
+        <button class="cancel-btn" id="cancelBtn">Annuler</button>
+        <button class="save-btn" id="saveBtn">Enregistrer</button>
+      </div>
+    </div>
+  </div>
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        const storage = firebase.storage();
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
 
-        // Data References
-        const menuRef = database.ref('menu');
-        const ordersRef = database.ref('orders');
-        const settingsRef = database.ref('settings');
+  <script>
+    // Configuration Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyDpSF4J0bsd6T0ImMpse0KQQRADaxiYUQw",
+      authDomain: "darhassna-484c3.firebaseapp.com",
+      databaseURL: "https://darhassna-484c3-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "darhassna-484c3",
+      storageBucket: "darhassna-484c3.appspot.com",
+      messagingSenderId: "141393162149",
+      appId: "1:141393162149:web:0717227eac221f5ddfc24c"
+    };
 
-        // Application State
-        let currentOrder = [];
-        let menuData = {};
-        let restaurantSettings = {};
-
-        // Initialize the app
-        document.addEventListener('DOMContentLoaded', () => {
-            loadDataFromFirebase();
-            setupEventListeners();
-            
-            // Add click event listener to restaurant name
-            document.querySelector('.main-title').addEventListener('click', handleRestaurantNameClick);
-        });
-
-        // Load data from Firebase
-        function loadDataFromFirebase() {
-            // Load menu
-            menuRef.on('value', (snapshot) => {
-                menuData = snapshot.val() || {
-                    breakfast: [],
-                    lunch: [],
-                    dinner: []
-                };
-                loadMenu();
-            });
-
-            // Load orders
-            ordersRef.orderByChild('timestamp').on('value', (snapshot) => {
-                const orders = snapshot.val() || {};
-                // Convert to array and reverse to show newest first
-                const ordersArray = Object.keys(orders).map(key => ({
-                    id: key,
-                    ...orders[key]
-                })).reverse();
-                
-                if (document.getElementById('admin-dashboard').classList.contains('hidden') === false) {
-                    loadOrdersForAdmin(ordersArray);
-                }
-            });
-
-            // Load settings
-            settingsRef.on('value', (snapshot) => {
-                restaurantSettings = snapshot.val() || {
-                    logo: ""
-                };
-            });
-        }
-
-        // Handle triple click on restaurant name
-        function handleRestaurantNameClick() {
-            const currentTime = new Date().getTime();
-            const lastClickTime = this.lastClickTime || 0;
-            this.clickCount = (currentTime - lastClickTime < 500) ? (this.clickCount || 0) + 1 : 1;
-            
-            if (this.clickCount === 3) {
-                checkAdminAccess();
-                this.clickCount = 0;
-            }
-            
-            this.lastClickTime = currentTime;
-        }
-
-        // Load menu for customers
-        function loadMenu() {
-            const container = document.getElementById('menu-container');
-            container.innerHTML = '';
-
-            const categories = [
-                { id: 'breakfast', name: 'Petit-déjeuner' },
-                { id: 'lunch', name: 'Déjeuner' },
-                { id: 'dinner', name: 'Dîner' }
-            ];
-
-            categories.forEach(category => {
-                if (menuData[category.id] && menuData[category.id].length > 0) {
-                    const section = document.createElement('div');
-                    section.className = 'mb-8';
-                    section.innerHTML = `
-                        <h2 class="menu-section-title text-xl font-bold mb-4 pb-2">${category.name}</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="${category.id}-items">
-                            ${menuData[category.id].map(item => `
-                                <div class="food-item bg-white p-4 rounded shadow food-item-card">
-                                    <h3 class="font-bold text-[#5a4a42]">${item.name}</h3>
-                                    <div class="flex justify-between items-center mt-2">
-                                        <span class="text-[#8B4513] font-bold">${item.price} DH</span>
-                                        <button class="add-to-order px-3 py-1 text-white rounded" 
-                                                data-id="${item.id}" data-name="${item.name}" data-price="${item.price}">
-                                            Ajouter
-                                        </button>
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    `;
-                    container.appendChild(section);
-                }
-            });
-        }
-
-        // Load admin dashboard
-        function loadAdminDashboard() {
-            ordersRef.once('value').then(snapshot => {
-                const orders = snapshot.val() || {};
-                const ordersArray = Object.keys(orders).map(key => ({
-                    id: key,
-                    ...orders[key]
-                })).reverse();
-                loadOrdersForAdmin(ordersArray);
-            });
-            
-            loadMenuEditor();
-        }
-
-        // Load orders for admin view
-        function loadOrdersForAdmin(orders) {
-            const container = document.getElementById('orders-list');
-            
-            if (orders.length === 0) {
-                container.innerHTML = '<p class="text-gray-500">Aucune commande pour le moment</p>';
-                return;
-            }
-
-            container.innerHTML = orders.map(order => `
-                <div class="order bg-white p-4 rounded shadow food-item-card" data-id="${order.id}">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h3 class="font-bold text-[#5a4a42]">Commande #${order.id.substring(0, 8)}</h3>
-                            <p class="text-sm">Table: ${order.tableNumber || 'N/A'}</p>
-                            <p class="text-sm">${new Date(order.timestamp).toLocaleString()}</p>
-                        </div>
-                        <span class="status-badge px-2 py-1 rounded text-xs ${getStatusClass(order.status)}">
-                            ${getStatusText(order.status)}
-                        </span>
-                    </div>
-                    <div class="mt-2">
-                        ${order.items ? Object.values(order.items).map(item => `
-                            <div class="flex justify-between text-sm py-1 border-b border-[#d4a762]">
-                                <span>${item.quantity}x ${item.name}</span>
-                                <span>${item.price * item.quantity} DH</span>
-                            </div>
-                        `).join('') : '<p class="text-sm text-gray-500">Aucun détail disponible</p>'}
-                    </div>
-                    <div class="flex justify-between items-center mt-2 pt-2 border-t border-[#d4a762]">
-                        <span class="font-bold text-[#5a4a42]">Total: ${order.total || 0} DH</span>
-                        <select class="order-status text-xs p-1 border border-[#d4a762] rounded" data-order-id="${order.id}">
-                            <option value="new" ${order.status === 'new' ? 'selected' : ''}>Nouvelle</option>
-                            <option value="preparing" ${order.status === 'preparing' ? 'selected' : ''}>En préparation</option>
-                            <option value="ready" ${order.status === 'ready' ? 'selected' : ''}>Prête</option>
-                            <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>Livrée</option>
-                        </select>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // Load menu editor for admin
-        function loadMenuEditor() {
-            const container = document.getElementById('menu-editor');
-            
-            container.innerHTML = `
-                <div class="mb-6">
-                    <h3 class="font-bold mb-4 text-[#5a4a42]">Paramètres du Restaurant</h3>
-                    <div class="bg-white p-4 rounded shadow food-item-card mb-6">
-                        <h4 class="font-bold mb-2">Logo du Restaurant</h4>
-                        <div class="flex items-center">
-                            <img id="logo-preview" src="${restaurantSettings.logo || 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTAwIj48dGV4dCB4PSIxMDAiIHk9IjUwIiBmb250LWZhbWlseT0iR2VvcmdpYSIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzVhNGE0MiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+REFSIEhBU1NOQTwvdGV4dD48L3N2Zz4='}" 
-                                 class="w-20 h-20 object-contain mr-4 border border-[#d4a762]">
-                            <div>
-                                <input type="file" id="logo-upload" accept="image/*" class="mb-2">
-                                <button id="update-logo" class="px-3 py-1 bg-[#5a4a42] text-white rounded text-sm">
-                                    Mettre à jour
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                ${Object.entries(menuData).map(([category, items]) => `
-                <div class="mb-6">
-                    <h3 class="font-bold mb-2 text-[#5a4a42]">${getCategoryName(category)}</h3>
-                    <div class="space-y-3" id="${category}-editor">
-                        ${items.map(item => `
-                            <div class="menu-item bg-white p-3 rounded shadow food-item-card flex flex-col md:flex-row">
-                                <div class="md:w-1/4 mb-3 md:mb-0 md:mr-4">
-                                    <img src="${item.image || 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwIiB5PSI1MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjYWFhIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5JbWFnZSBub24gZGlzcG9uaWJsZTwvdGV4dD48L3N2Zz4='}" 
-                                         class="w-full h-32 object-cover rounded mb-2 image-preview-${item.id} border border-[#d4a762]">
-                                    <div class="flex flex-col">
-                                        <input type="file" class="image-upload hidden" data-item-id="${item.id}" accept="image/*">
-                                        <button class="upload-image-btn px-2 py-1 bg-gray-200 rounded text-sm mb-1" data-item-id="${item.id}">
-                                            <i class="fas fa-upload mr-1"></i> Changer l'image
-                                        </button>
-                                        <input type="text" value="${item.image || ''}" 
-                                               class="item-image-url w-full p-1 border border-[#d4a762] rounded text-sm" 
-                                               data-id="${item.id}" data-category="${category}" placeholder="URL de l'image">
-                                    </div>
-                                </div>
-                                <div class="flex-1">
-                                    <div class="mb-3">
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Nom</label>
-                                        <input type="text" value="${item.name}" 
-                                               class="item-name w-full p-1 border border-[#d4a762] rounded" 
-                                               data-id="${item.id}" data-category="${category}">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Prix (DH)</label>
-                                        <input type="number" value="${item.price}" 
-                                               class="item-price w-full p-1 border border-[#d4a762] rounded" 
-                                               data-id="${item.id}" data-category="${category}">
-                                    </div>
-                                </div>
-                                <div class="flex items-start">
-                                    <button class="delete-item ml-2 px-2 py-1 bg-red-500 text-white rounded text-sm">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                    <button class="add-item mt-2 px-3 py-1 bg-gray-200 rounded text-sm" data-category="${category}">
-                        <i class="fas fa-plus mr-1"></i> Ajouter un plat
-                    </button>
-                </div>
-                `).join('')}
-
-                <button id="save-menu" class="mt-4 px-4 py-2 bg-[#5a4a42] text-white rounded hover:bg-[#3a2a22] transition">
-                    Enregistrer le Menu
-                </button>
+    // Initialiser Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const storage = firebase.storage();
+    
+    // Variables globales
+    let currentItemId = null;
+    let isEditing = false;
+    let selectedImageFile = null;
+    let menuItems = {};
+    
+    // Fonction pour تبديل بين الأقسام
+    function showSection(section) {
+      document.getElementById('ordersSection').style.display = section === 'orders' ? 'block' : 'none';
+      document.getElementById('menuSection').style.display = section === 'menu' ? 'block' : 'none';
+      
+      // تحديث أزرار التبويب
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+    }
+    
+    // ==============================================
+    // الجزء الخاص بإدارة الطلبات
+    // ==============================================
+    
+    // دالة لتحديث الساعة
+    function updateClock() {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const dateString = now.toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      document.getElementById('liveClock').innerHTML = `${dateString}<br>${timeString}`;
+    }
+    
+    // تحديث الساعة كل ثانية
+    setInterval(updateClock, 1000);
+    updateClock();
+    
+    // دالة لعرض الطلبات
+    function createOrderElement(key, data) {
+      const currentStatus = data.etat || data.statut || "En attente";
+      const timeString = new Date(data.timestamp).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      
+      const div = document.createElement("div");
+      div.className = `commande status-${currentStatus.replace(/\s+/g, '-').toLowerCase()}`;
+      div.id = `commande-${key}`;
+      
+      div.innerHTML = `
+        <button class="delete-btn" data-key="${key}">×</button>
+        <div class="commande-header">
+          <div class="table-number">Table ${data.table}</div>
+          <div class="order-time">${timeString}</div>
+        </div>
+        
+        <div class="order-items">
+          ${data.commandes.map(item => {
+            const menuItem = menuItems[item.plat] || { image: "", defaultPrice: item.prix };
+            return `
+            <div class="order-item">
+              <div>
+                ${menuItem.image ? `<img src="${menuItem.image}" style="width:30px;height:30px;object-fit:cover;border-radius:4px;margin-right:5px;" alt="${item.plat}">` : ''}
+                <span class="item-quantity">${item.quantite}x</span>
+                ${item.plat}
+              </div>
+              <div>${item.prix * item.quantite} MAD</div>
+            </div>
             `;
-
-            // Setup image uploads
-            setupImageUploads();
+          }).join('')}
+        </div>
+        
+        <div class="order-total">Total: ${data.total} MAD</div>
+        
+        <div class="order-status">
+          <label>État :</label>
+          <select class="status-select" data-key="${key}">
+            <option value="En attente" ${currentStatus === "En attente" ? "selected" : ""}>🕐 En attente</option>
+            <option value="En préparation" ${currentStatus === "En préparation" ? "selected" : ""}>👨‍🍳 En préparation</option>
+            <option value="Prêt" ${currentStatus === "Prêt" ? "selected" : ""}>✅ Prêt</option>
+            <option value="Livré" ${currentStatus === "Livré" ? "selected" : ""}>🛵 Livré</option>
+          </select>
+        </div>
+      `;
+      
+      // إضافة معالج الأحداث لتغيير الحالة
+      div.querySelector('.status-select').addEventListener("change", function() {
+        const newStatus = this.value;
+        db.ref("commandes/" + key).update({ etat: newStatus });
+      });
+      
+      // إضافة معالج الأحداث للحذف
+      div.querySelector('.delete-btn').addEventListener("click", function() {
+        if (confirm("Voulez-vous vraiment supprimer cette commande ?")) {
+          db.ref("commandes/" + key).remove();
         }
-
-        function setupImageUploads() {
-            // Logo upload
-            document.getElementById('update-logo').addEventListener('click', function() {
-                const fileInput = document.getElementById('logo-upload');
-                const file = fileInput.files[0];
-                
-                if (file) {
-                    const storageRef = storage.ref('logos/' + file.name);
-                    storageRef.put(file).then(snapshot => {
-                        return snapshot.ref.getDownloadURL();
-                    }).then(url => {
-                        restaurantSettings.logo = url;
-                        document.getElementById('logo-preview').src = url;
-                        return settingsRef.update({ logo: url });
-                    }).catch(error => {
-                        console.error("Error uploading logo:", error);
-                    });
-                }
-            });
-
-            // Menu item image upload
-            document.querySelectorAll('.upload-image-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const itemId = this.getAttribute('data-item-id');
-                    const fileInput = document.querySelector(`.image-upload[data-item-id="${itemId}"]`);
-                    fileInput.click();
-                });
-            });
-
-            document.querySelectorAll('.image-upload').forEach(input => {
-                input.addEventListener('change', function() {
-                    const itemId = this.getAttribute('data-item-id');
-                    const file = this.files[0];
-                    
-                    if (file) {
-                        const storageRef = storage.ref('menu-items/' + file.name);
-                        storageRef.put(file).then(snapshot => {
-                            return snapshot.ref.getDownloadURL();
-                        }).then(url => {
-                            const category = document.querySelector(`.item-name[data-id="${itemId}"]`).dataset.category;
-                            const itemIndex = menuData[category].findIndex(i => i.id == itemId);
-                            
-                            if (itemIndex !== -1) {
-                                menuData[category][itemIndex].image = url;
-                                document.querySelector(`.image-preview-${itemId}`).src = url;
-                                document.querySelector(`.item-image-url[data-id="${itemId}"]`).value = url;
-                            }
-                        }).catch(error => {
-                            console.error("Error uploading image:", error);
-                        });
-                    }
-                });
-            });
-        }
-
-        // Helper functions
-        function getCategoryName(category) {
-            const names = {
-                breakfast: "Petit-déjeuner",
-                lunch: "Déjeuner",
-                dinner: "Dîner"
-            };
-            return names[category];
-        }
-
-        function getStatusText(status) {
-            const statusMap = {
-                new: "Nouvelle",
-                preparing: "En préparation",
-                ready: "Prête",
-                delivered: "Livrée"
-            };
-            return statusMap[status] || status;
-        }
-
-        function getStatusClass(status) {
-            const classMap = {
-                new: "order-status-new",
-                preparing: "order-status-preparing",
-                ready: "order-status-ready",
-                delivered: "order-status-delivered"
-            };
-            return classMap[status] || "";
-        }
-
-        // Update order summary
-        function updateOrderSummary() {
-            const container = document.getElementById('order-items');
-            const totalElement = document.getElementById('order-total');
-            
-            if (currentOrder.length === 0) {
-                container.innerHTML = '<p class="text-gray-500">Votre panier est vide</p>';
-                totalElement.textContent = "0 DH";
-                return;
-            }
-
-            container.innerHTML = currentOrder.map(item => `
-                <div class="flex justify-between py-1 border-b border-[#d4a762]">
-                    <span class="text-[#5a4a42]">${item.quantity}x ${item.name}</span>
-                    <span class="text-[#8B4513] font-bold">${item.price * item.quantity} DH</span>
-                </div>
-            `).join('');
-
-            const total = currentOrder.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            totalElement.textContent = `${total} DH`;
-        }
-
-        // Admin access control
-        function checkAdminAccess() {
-            const adminPassword = "1234";
-            let loginAttempts = 0;
-            
-            const password = prompt("Entrez le mot de passe admin:");
-            if (password === adminPassword) {
-                document.getElementById('customer-view').classList.add('hidden');
-                document.getElementById('admin-dashboard').classList.remove('hidden');
-                loadAdminDashboard();
-            } else {
-                loginAttempts++;
-                alert("Mot de passe incorrect. Tentatives restantes: " + (3 - loginAttempts));
-            }
-        }
-
-        // Setup event listeners
-        function setupEventListeners() {
-            // Add to order button
-            document.addEventListener('click', (e) => {
-                if (e.target.classList.contains('add-to-order') || e.target.closest('.add-to-order')) {
-                    const button = e.target.classList.contains('add-to-order') ? e.target : e.target.closest('.add-to-order');
-                    const id = button.dataset.id;
-                    const name = button.dataset.name;
-                    const price = parseFloat(button.dataset.price);
-                    
-                    // Check if item already in order
-                    const existingItem = currentOrder.find(item => item.id === id);
-                    if (existingItem) {
-                        existingItem.quantity += 1;
-                    } else {
-                        currentOrder.push({ id, name, price, quantity: 1 });
-                    }
-                    
-                    updateOrderSummary();
-                }
-            });
-
-            // Submit order
-            document.getElementById('submit-order').addEventListener('click', () => {
-                if (currentOrder.length === 0) {
-                    alert("Votre panier est vide!");
-                    return;
-                }
-                document.getElementById('table-modal').classList.remove('hidden');
-            });
-
-            // Confirm order
-            document.getElementById('confirm-order').addEventListener('click', () => {
-                const tableNumber = document.getElementById('table-number').value.trim();
-                const errorElement = document.getElementById('table-error');
-                
-                if (!tableNumber || isNaN(tableNumber) || parseInt(tableNumber) <= 0) {
-                    errorElement.classList.remove('hidden');
-                    document.getElementById('table-number').classList.add('input-error');
-                    setTimeout(() => {
-                        document.getElementById('table-number').classList.remove('input-error');
-                    }, 500);
-                    return;
-                }
-                
-                errorElement.classList.add('hidden');
-                
-                // Create new order in Firebase
-                const newOrder = {
-                    tableNumber: parseInt(tableNumber),
-                    items: currentOrder.reduce((obj, item, index) => {
-                        obj[index] = item;
-                        return obj;
-                    }, {}),
-                    total: currentOrder.reduce((sum, item) => sum + (item.price * item.quantity), 0),
-                    status: "new",
-                    timestamp: firebase.database.ServerValue.TIMESTAMP
-                };
-                
-                ordersRef.push(newOrder)
-                    .then(() => {
-                        currentOrder = [];
-                        updateOrderSummary();
-                        document.getElementById('table-modal').classList.add('hidden');
-                        document.getElementById('table-number').value = '';
-                        alert("✅ Commande envoyée !");
-                    })
-                    .catch(error => {
-                        console.error("Error saving order:", error);
-                        alert("Erreur lors de l'envoi de la commande");
-                    });
-            });
-
-            // Cancel order
-            document.getElementById('cancel-order').addEventListener('click', () => {
-                document.getElementById('table-modal').classList.add('hidden');
-                document.getElementById('table-number').value = '';
-                document.getElementById('table-error').classList.add('hidden');
-            });
-
-            // Logout
-            document.getElementById('logout-btn').addEventListener('click', () => {
-                document.getElementById('admin-dashboard').classList.add('hidden');
-                document.getElementById('customer-view').classList.remove('hidden');
-            });
-
-            // Order status change
-            document.addEventListener('change', (e) => {
-                if (e.target.classList.contains('order-status')) {
-                    const orderId = e.target.dataset.orderId;
-                    const newStatus = e.target.value;
-                    
-                    ordersRef.child(orderId).update({ status: newStatus })
-                        .catch(error => {
-                            console.error("Error updating order status:", error);
-                        });
-                }
-            });
-
-            // Menu editor events
-            document.addEventListener('click', (e) => {
-                // Add new menu item
-                if (e.target.classList.contains('add-item') || e.target.closest('.add-item')) {
-                    const button = e.target.classList.contains('add-item') ? e.target : e.target.closest('.add-item');
-                    const category = button.dataset.category;
-                    
-                    const newId = Date.now().toString(); // Use timestamp as ID
-                    const newItem = {
-                        id: newId,
-                        name: "Nouveau plat",
-                        price: 0,
-                        category: category,
-                        image: ""
-                    };
-                    
-                    // Add to local data
-                    if (!menuData[category]) menuData[category] = [];
-                    menuData[category].push(newItem);
-                    
-                    // Reload editor
-                    loadMenuEditor();
-                }
-                
-                // Delete menu item
-                if (e.target.classList.contains('delete-item') || e.target.closest('.delete-item')) {
-                    const button = e.target.classList.contains('delete-item') ? e.target : e.target.closest('.delete-item');
-                    const itemElement = button.closest('.menu-item');
-                    const id = itemElement.querySelector('.item-name').dataset.id;
-                    const category = itemElement.querySelector('.item-name').dataset.category;
-                    
-                    // Remove from local data
-                    menuData[category] = menuData[category].filter(item => item.id !== id);
-                    
-                    // Reload editor
-                    loadMenuEditor();
-                }
-            });
-
-            // Save menu changes
-            document.addEventListener('input', (e) => {
-                if (e.target.classList.contains('item-name') || e.target.classList.contains('item-price') || e.target.classList.contains('item-image-url')) {
-                    const input = e.target;
-                    const id = input.dataset.id;
-                    const category = input.dataset.category;
-                    const item = menuData[category].find(i => i.id === id);
-                    
-                    if (item) {
-                        if (input.classList.contains('item-name')) {
-                            item.name = input.value;
-                        } else if (input.classList.contains('item-price')) {
-                            item.price = parseFloat(input.value) || 0;
-                        } else if (input.classList.contains('item-image-url')) {
-                            item.image = input.value;
-                            const preview = document.querySelector(`.image-preview-${id}`);
-                            if (preview) {
-                                preview.src = input.value || 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwIiB5PSI1MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE0IiBmaWxsPSIjYWFhIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIj5JbWFnZSBub24gZGlzcG9uaWJsZTwvdGV4dD48L3N2Zz4=';
-                            }
-                        }
-                    }
-                }
-            });
-
-            // Save menu button
-            document.getElementById('save-menu')?.addEventListener('click', (e) => {
-                // Save to Firebase
-                menuRef.set(menuData)
-                    .then(() => {
-                        alert("✅ Menu enregistré avec succès !");
-                        // Reload customer view
-                        loadMenu();
-                    })
-                    .catch(error => {
-                        console.error("Error saving menu:", error);
-                        alert("Erreur lors de l'enregistrement du menu");
-                    });
-            });
-        }
-    </script>
+      });
+      
+      return div;
+    }
+    
+    // جلب وتحديث الطلبات
+    db.ref("commandes").on("value", (snapshot) => {
+      const commandesContainer = document.getElementById("liste-commandes");
+      commandesContainer.innerHTML = '';
+      
+      const orders = snapshot.val();
+      if (orders) {
+        Object.entries(orders).forEach(([key, data]) => {
+          const orderElement = createOrderElement(key, data);
+          commandesContainer.appendChild(orderElement);
+        });
+      }
+    });
+    
+    // ==============================================
+    // الجزء الخاص بإدارة القائمة
+    // ==============================================
+    
+    // دالة لفتح نافذة الإضافة/التعديل
+    function openModal(editing, item = null) {
+      isEditing = editing;
+      currentItemId = editing ? item.id : null;
+      
+      document.getElementById('modalTitle').textContent = editing ? 'Modifier le plat' : 'Ajouter un nouveau plat';
+      document.getElementById('itemName').value = editing ? item.name : '';
+      document.getElementById('itemPrice').value = editing ? item.price : '';
+      document.getElementById('itemDescription').value = editing ? item.description : '';
+      
+      const imagePreview = document.getElementById('imagePreview');
+      if (editing && item.imageUrl) {
+        imagePreview.src = item.imageUrl;
+        imagePreview.style.display = 'block';
+      } else {
+        imagePreview.style.display = 'none';
+      }
+      
+      document.getElementById('itemImage').value = '';
+      selectedImageFile = null;
+      
+      document.getElementById('itemModal').style.display = 'flex';
+    }
+    
+    // دالة لإغلاق النافذة
+    function closeModal() {
+      document.getElementById('itemModal').style.display = 'none';
+    }
+    
+    // دالة لحفظ العنصر
+    async function saveMenuItem() {
+      const name = document.getElementById('itemName').value.trim();
+      const price = parseFloat(document.getElementById('itemPrice').value);
+      const description = document.getElementById('itemDescription').value.trim();
+      
+      if (!name || isNaN(price)) {
+        alert('Veuillez remplir tous les champs requis');
+        return;
+      }
+      
+      let imageUrl = '';
+      
+      // رفع الصورة إذا تم اختيارها
+      if (selectedImageFile) {
+        const storageRef = storage.ref(`menu_images/${selectedImageFile.name}`);
+        await storageRef.put(selectedImageFile);
+        imageUrl = await storageRef.getDownloadURL();
+      } else if (isEditing && document.getElementById('imagePreview').style.display === 'block') {
+        // الاحتفاظ بالصورة الحالية إذا لم يتم اختيار صورة جديدة
+        imageUrl = document.getElementById('imagePreview').src;
+      }
+      
+      const itemData = {
+        name,
+        price,
+        description,
+        imageUrl
+      };
+      
+      if (isEditing) {
+        // تحديث العنصر الحالي
+        db.ref(`menu/${currentItemId}`).update(itemData);
+      } else {
+        // إضافة عنصر جديد
+        db.ref('menu').push(itemData);
+      }
+      
+      closeModal();
+    }
+    
+    // دالة لحذف العنصر
+    function deleteMenuItem(itemId) {
+      if (confirm('Voulez-vous vraiment supprimer ce plat ?')) {
+        db.ref(`menu/${itemId}`).remove();
+      }
+    }
+    
+    // دالة لعرض العناصر
+    function renderMenuItems(items) {
+      const container = document.getElementById('menuItemsContainer');
+      container.innerHTML = '';
+      
+      if (!items) {
+        container.innerHTML = '<p>Aucun plat disponible pour le moment</p>';
+        return;
+      }
+      
+      Object.entries(items).forEach(([id, item]) => {
+        const menuItemElement = document.createElement('div');
+        menuItemElement.className = 'menu-item';
+        
+        menuItemElement.innerHTML = `
+          ${item.imageUrl ? `<img src="${item.imageUrl}" class="item-image" alt="${item.name}">` : ''}
+          <div class="item-name">${item.name}</div>
+          <div>${item.description || ''}</div>
+          <div class="item-price">${item.price} MAD</div>
+          <div class="item-actions">
+            <button class="edit-btn" data-id="${id}">Modifier</button>
+            <button class="delete-btn" data-id="${id}">Supprimer</button>
+          </div>
+        `;
+        
+        container.appendChild(menuItemElement);
+        
+        // إضافة معالج الأحداث للزر تعديل
+        menuItemElement.querySelector('.edit-btn').addEventListener('click', () => {
+          openModal(true, { id, ...item });
+        });
+        
+        // إضافة معالج الأحداث للزر حذف
+        menuItemElement.querySelector('.delete-btn').addEventListener('click', () => {
+          deleteMenuItem(id);
+        });
+      });
+    }
+    
+    // جلب وتحديث القائمة
+    db.ref("menu").on("value", (snapshot) => {
+      const items = snapshot.val();
+      renderMenuItems(items);
+      
+      // تحديث متغير menuItems للاستخدام في قسم الطلبات
+      menuItems = {};
+      if (items) {
+        Object.entries(items).forEach(([id, item]) => {
+          menuItems[item.name] = {
+            image: item.imageUrl,
+            defaultPrice: item.price
+          };
+        });
+      }
+    });
+    
+    // إعداد معالج الأحداث
+    document.getElementById('addItemBtn').addEventListener('click', () => {
+      openModal(false);
+    });
+    
+    document.getElementById('cancelBtn').addEventListener('click', closeModal);
+    document.getElementById('saveBtn').addEventListener('click', saveMenuItem);
+    
+    document.getElementById('itemImage').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        selectedImageFile = file;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const preview = document.getElementById('imagePreview');
+          preview.src = event.target.result;
+          preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  </script>
 </body>
 </html>
