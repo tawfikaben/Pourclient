@@ -40,53 +40,40 @@
       padding: 10px;
       border-radius: 5px;
     }
-    .menu-item {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 15px;
-      padding-bottom: 10px;
-      border-bottom: 1px dashed #ddd;
-      align-items: center;
+    .menu-items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
     }
-    .item-info {
-      flex: 1;
+    .menu-item {
+      background-color: #fff;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      padding: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .menu-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    }
+    .menu-item.selected {
+      background-color: #f0f7ff;
+      border: 2px solid #d35400;
     }
     .item-name {
       font-weight: bold;
+      margin-bottom: 5px;
     }
     .item-price {
       color: #d35400;
+      font-weight: bold;
     }
     .item-desc {
-      font-size: 0.9em;
+      font-size: 0.8em;
       color: #7f8c8d;
-      margin-top: 5px;
-    }
-    .item-controls {
-      display: flex;
-      align-items: center;
-      margin-left: 15px;
-    }
-    .quantity {
-      width: 50px;
-      text-align: center;
-      margin: 0 10px;
-    }
-    .quantity-btn {
-      background-color: #d35400;
-      color: white;
-      border: none;
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .quantity-btn:hover {
-      background-color: #e67e22;
+      margin: 5px 0;
     }
     form {
       background-color: #f9f9f9;
@@ -170,12 +157,27 @@
       background-color: #d35400;
       color: white;
     }
+    .date-display {
+      text-align: center;
+      font-size: 1.1em;
+      margin-bottom: 20px;
+      color: #555;
+    }
+    .quick-order-btn {
+      background-color: #27ae60;
+      margin-top: 10px;
+    }
+    .quick-order-btn:hover {
+      background-color: #2ecc71;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Dar Hassna</h1>
     <p class="subtitle">Cuisine marocaine authentique</p>
+    
+    <div class="date-display" id="currentDate"></div>
     
     <h2>Notre Menu</h2>
     
@@ -189,94 +191,56 @@
     
     <div class="menu-section" id="entrees">
       <h3>Entrées</h3>
-      
-      <div class="menu-item" data-category="entrees">
-        <div class="item-info">
+      <div class="menu-items-grid">
+        <div class="menu-item" data-category="entrees" data-item='{"name":"Salade Marocaine","price":25,"desc":"Tomates, concombres, oignons et poivrons avec des herbes"}'>
           <div class="item-name">Salade Marocaine</div>
           <div class="item-desc">Tomates, concombres, oignons et poivrons avec des herbes</div>
+          <div class="item-price">25 Dhs</div>
         </div>
-        <div class="item-price">25 Dhs</div>
-        <div class="item-controls">
-          <button class="quantity-btn minus" data-item="Salade Marocaine">-</button>
-          <input type="number" class="quantity" data-item="Salade Marocaine" min="0" value="0">
-          <button class="quantity-btn plus" data-item="Salade Marocaine">+</button>
-        </div>
-      </div>
-      
-      <div class="menu-item" data-category="entrees">
-        <div class="item-info">
+        
+        <div class="menu-item" data-category="entrees" data-item='{"name":"Briouates","price":30,"desc":"Feuilles de brick farcies à la viande et aux amandes"}'>
           <div class="item-name">Briouates</div>
           <div class="item-desc">Feuilles de brick farcies à la viande et aux amandes</div>
-        </div>
-        <div class="item-price">30 Dhs</div>
-        <div class="item-controls">
-          <button class="quantity-btn minus" data-item="Briouates">-</button>
-          <input type="number" class="quantity" data-item="Briouates" min="0" value="0">
-          <button class="quantity-btn plus" data-item="Briouates">+</button>
+          <div class="item-price">30 Dhs</div>
         </div>
       </div>
     </div>
     
     <div class="menu-section" id="plats">
       <h3>Plats Principaux</h3>
-      
-      <div class="menu-item" data-category="plats">
-        <div class="item-info">
+      <div class="menu-items-grid">
+        <div class="menu-item" data-category="plats" data-item='{"name":"Tajine Kefta","price":65,"desc":"Boulettes de viande dans une sauce tomate avec œufs"}'>
           <div class="item-name">Tajine Kefta</div>
           <div class="item-desc">Boulettes de viande dans une sauce tomate avec œufs</div>
+          <div class="item-price">65 Dhs</div>
         </div>
-        <div class="item-price">65 Dhs</div>
-        <div class="item-controls">
-          <button class="quantity-btn minus" data-item="Tajine Kefta">-</button>
-          <input type="number" class="quantity" data-item="Tajine Kefta" min="0" value="0">
-          <button class="quantity-btn plus" data-item="Tajine Kefta">+</button>
-        </div>
-      </div>
-      
-      <div class="menu-item" data-category="plats">
-        <div class="item-info">
+        
+        <div class="menu-item" data-category="plats" data-item='{"name":"Couscous Royal","price":80,"desc":"Couscous avec légumes et viandes variées"}'>
           <div class="item-name">Couscous Royal</div>
           <div class="item-desc">Couscous avec légumes et viandes variées</div>
-        </div>
-        <div class="item-price">80 Dhs</div>
-        <div class="item-controls">
-          <button class="quantity-btn minus" data-item="Couscous Royal">-</button>
-          <input type="number" class="quantity" data-item="Couscous Royal" min="0" value="0">
-          <button class="quantity-btn plus" data-item="Couscous Royal">+</button>
+          <div class="item-price">80 Dhs</div>
         </div>
       </div>
     </div>
     
     <div class="menu-section" id="desserts">
       <h3>Desserts</h3>
-      
-      <div class="menu-item" data-category="desserts">
-        <div class="item-info">
+      <div class="menu-items-grid">
+        <div class="menu-item" data-category="desserts" data-item='{"name":"Pastilla au Lait","price":35,"desc":"Feuilles de brick garnies de crème pâtissière et amandes"}'>
           <div class="item-name">Pastilla au Lait</div>
           <div class="item-desc">Feuilles de brick garnies de crème pâtissière et amandes</div>
-        </div>
-        <div class="item-price">35 Dhs</div>
-        <div class="item-controls">
-          <button class="quantity-btn minus" data-item="Pastilla au Lait">-</button>
-          <input type="number" class="quantity" data-item="Pastilla au Lait" min="0" value="0">
-          <button class="quantity-btn plus" data-item="Pastilla au Lait">+</button>
+          <div class="item-price">35 Dhs</div>
         </div>
       </div>
     </div>
     
     <div class="menu-section" id="boissons">
       <h3>Boissons</h3>
-      
-      <div class="menu-item" data-category="boissons">
-        <div class="item-info">
+      <div class="menu-items-grid">
+        <div class="menu-item" data-category="boissons" data-item='{"name":"Thé à la Menthe","price":15,"desc":"Thé vert avec menthe fraîche et sucre"}'>
           <div class="item-name">Thé à la Menthe</div>
           <div class="item-desc">Thé vert avec menthe fraîche et sucre</div>
-        </div>
-        <div class="item-price">15 Dhs</div>
-        <div class="item-controls">
-          <button class="quantity-btn minus" data-item="Thé à la Menthe">-</button>
-          <input type="number" class="quantity" data-item="Thé à la Menthe" min="0" value="0">
-          <button class="quantity-btn plus" data-item="Thé à la Menthe">+</button>
+          <div class="item-price">15 Dhs</div>
         </div>
       </div>
     </div>
@@ -287,16 +251,16 @@
       <label for="table">Numéro de table:</label>
       <input type="number" id="table" min="1" required>
       
-      <label for="notes">Notes spéciales (allergies, modifications, etc.):</label>
-      <textarea id="notes" rows="3"></textarea>
-      
       <div class="order-summary">
-        <h3>Récapitulatif de la Commande</h3>
-        <div id="orderItems"></div>
+        <h3>Votre Sélection</h3>
+        <div id="orderItems">
+          <p>Sélectionnez des articles en cliquant dessus</p>
+        </div>
         <div class="order-total">Total: <span id="orderTotal">0</span> Dhs</div>
       </div>
       
       <button type="submit">Confirmer la Commande</button>
+      <button type="button" class="quick-order-btn" id="quickOrder">Commande Rapide (1 clic)</button>
       
       <div id="loading">
         <img src="https://i.gifer.com/ZZ5H.gif" width="50" alt="En cours...">
@@ -323,15 +287,17 @@
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    // Prix des articles
-    const itemPrices = {
-      "Salade Marocaine": 25,
-      "Briouates": 30,
-      "Tajine Kefta": 65,
-      "Couscous Royal": 80,
-      "Pastilla au Lait": 35,
-      "Thé à la Menthe": 15
-    };
+    // Afficher la date actuelle
+    function updateCurrentDate() {
+      const now = new Date();
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      document.getElementById('currentDate').textContent = now.toLocaleDateString('fr-FR', options);
+      return now;
+    }
+
+    // Variables globales
+    let selectedItems = [];
+    const currentDate = updateCurrentDate();
 
     function showLoading(show) {
       document.getElementById('loading').style.display = show ? 'block' : 'none';
@@ -340,29 +306,25 @@
     function updateOrderSummary() {
       const orderItemsContainer = document.getElementById('orderItems');
       let total = 0;
-      let itemsHTML = '';
       
-      // جمع جميع العناصر المطلوبة
-      const quantityInputs = document.querySelectorAll('.quantity');
-      quantityInputs.forEach(input => {
-        const itemName = input.dataset.item;
-        const quantity = parseInt(input.value);
-        
-        if (quantity > 0) {
-          const itemPrice = itemPrices[itemName];
-          const itemTotal = itemPrice * quantity;
-          total += itemTotal;
-          
-          itemsHTML += `
-            <div class="order-item">
-              <span>${itemName} x${quantity}</span>
-              <span>${itemTotal} Dhs</span>
-            </div>
-          `;
-        }
+      if (selectedItems.length === 0) {
+        orderItemsContainer.innerHTML = '<p>Sélectionnez des articles en cliquant dessus</p>';
+        document.getElementById('orderTotal').textContent = '0';
+        return;
+      }
+      
+      let itemsHTML = '';
+      selectedItems.forEach(item => {
+        total += item.price;
+        itemsHTML += `
+          <div class="order-item">
+            <span>${item.name}</span>
+            <span>${item.price} Dhs</span>
+          </div>
+        `;
       });
       
-      orderItemsContainer.innerHTML = itemsHTML || '<p>Aucun article sélectionné</p>';
+      orderItemsContainer.innerHTML = itemsHTML;
       document.getElementById('orderTotal').textContent = total;
     }
 
@@ -375,7 +337,7 @@
         const category = this.dataset.category;
         document.querySelectorAll('.menu-item').forEach(item => {
           if (category === 'all' || item.dataset.category === category) {
-            item.style.display = 'flex';
+            item.style.display = 'block';
           } else {
             item.style.display = 'none';
           }
@@ -383,63 +345,67 @@
       });
     });
 
-    // التحكم في الكميات
-    document.querySelectorAll('.quantity-btn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const itemName = this.dataset.item;
-        const input = document.querySelector(`.quantity[data-item="${itemName}"]`);
-        let value = parseInt(input.value);
+    // Sélection d'articles par clic
+    document.querySelectorAll('.menu-item').forEach(item => {
+      item.addEventListener('click', function() {
+        const itemData = JSON.parse(this.dataset.item);
         
-        if (this.classList.contains('plus')) {
-          value++;
-        } else if (this.classList.contains('minus') && value > 0) {
-          value--;
+        // Vérifier si l'article est déjà sélectionné
+        const existingIndex = selectedItems.findIndex(i => i.name === itemData.name);
+        
+        if (existingIndex >= 0) {
+          // Retirer l'article s'il est déjà sélectionné
+          selectedItems.splice(existingIndex, 1);
+          this.classList.remove('selected');
+        } else {
+          // Ajouter l'article
+          selectedItems.push(itemData);
+          this.classList.add('selected');
         }
         
-        input.value = value;
         updateOrderSummary();
       });
     });
 
-    // تحديث عند تغيير الكمية يدويا
-    document.querySelectorAll('.quantity').forEach(input => {
-      input.addEventListener('change', function() {
-        if (this.value < 0) this.value = 0;
-        updateOrderSummary();
-      });
-    });
-
-    document.getElementById('commandeForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      // جمع بيانات الطلب
-      const orderData = {
-        table: document.getElementById('table').value,
-        notes: document.getElementById('notes').value,
-        commandes: [],
-        total: parseInt(document.getElementById('orderTotal').textContent),
-        statut: "en attente",
-        timestamp: firebase.database.ServerValue.TIMESTAMP
-      };
-
-      // إضافة العناصر المطلوبة
-      const quantityInputs = document.querySelectorAll('.quantity');
-      quantityInputs.forEach(input => {
-        const quantity = parseInt(input.value);
-        if (quantity > 0) {
-          orderData.commandes.push({
-            item: input.dataset.item,
-            quantity: quantity,
-            price: itemPrices[input.dataset.item]
-          });
-        }
-      });
-
-      // التحقق من وجود طلبات
-      if (orderData.commandes.length === 0) {
+    // Commande rapide (1 clic)
+    document.getElementById('quickOrder').addEventListener('click', function() {
+      if (selectedItems.length === 0) {
         alert("Veuillez sélectionner au moins un article");
         return;
       }
+      
+      const tableNumber = document.getElementById('table').value;
+      if (!tableNumber) {
+        alert("Veuillez entrer un numéro de table");
+        return;
+      }
+      
+      submitOrder();
+    });
+
+    // Soumission du formulaire
+    document.getElementById('commandeForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      if (selectedItems.length === 0) {
+        alert("Veuillez sélectionner au moins un article");
+        return;
+      }
+      
+      submitOrder();
+    });
+
+    // Fonction pour soumettre la commande
+    async function submitOrder() {
+      const orderData = {
+        table: document.getElementById('table').value,
+        items: selectedItems,
+        total: parseInt(document.getElementById('orderTotal').textContent),
+        date: currentDate.toISOString(),
+        dateDisplay: document.getElementById('currentDate').textContent,
+        status: "en attente",
+        timestamp: firebase.database.ServerValue.TIMESTAMP
+      };
 
       showLoading(true);
       
@@ -450,17 +416,18 @@
         document.getElementById('confirmation').innerHTML = `
           <h3>Commande confirmée!</h3>
           <p>Table: ${orderData.table}</p>
-          <p>Numéro de commande: ${newOrderRef.key}</p>
+          <p>Numéro: ${newOrderRef.key}</p>
           <p>Total: ${orderData.total} Dhs</p>
+          <p>Date: ${orderData.dateDisplay}</p>
         `;
         document.getElementById('confirmation').style.display = 'block';
         
-        // إعادة تعيين النموذج
-        this.reset();
-        document.querySelectorAll('.quantity').forEach(input => input.value = 0);
+        // Réinitialiser la sélection
+        selectedItems = [];
+        document.querySelectorAll('.menu-item').forEach(item => item.classList.remove('selected'));
         updateOrderSummary();
         
-        // إخفاء التأكيد بعد 10 ثواني
+        // Masquer la confirmation après 10 secondes
         setTimeout(() => {
           document.getElementById('confirmation').style.display = 'none';
         }, 10000);
@@ -470,10 +437,7 @@
       } finally {
         showLoading(false);
       }
-    });
-
-    // تحديث الملخص عند التحميل
-    updateOrderSummary();
+    }
   </script>
 </body>
 </html>
