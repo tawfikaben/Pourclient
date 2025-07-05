@@ -34,12 +34,22 @@
     .menu-section {
       margin-bottom: 30px;
     }
+    .menu-section h3 {
+      background-color: #d35400;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+    }
     .menu-item {
       display: flex;
       justify-content: space-between;
       margin-bottom: 15px;
       padding-bottom: 10px;
       border-bottom: 1px dashed #ddd;
+      align-items: center;
+    }
+    .item-info {
+      flex: 1;
     }
     .item-name {
       font-weight: bold;
@@ -52,6 +62,32 @@
       color: #7f8c8d;
       margin-top: 5px;
     }
+    .item-controls {
+      display: flex;
+      align-items: center;
+      margin-left: 15px;
+    }
+    .quantity {
+      width: 50px;
+      text-align: center;
+      margin: 0 10px;
+    }
+    .quantity-btn {
+      background-color: #d35400;
+      color: white;
+      border: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .quantity-btn:hover {
+      background-color: #e67e22;
+    }
     form {
       background-color: #f9f9f9;
       padding: 20px;
@@ -63,12 +99,13 @@
       margin: 15px 0 5px;
       font-weight: bold;
     }
-    input, select {
+    input, select, textarea {
       width: 100%;
       padding: 10px;
       border: 1px solid #ddd;
       border-radius: 4px;
       font-size: 16px;
+      margin-bottom: 10px;
     }
     button {
       background-color: #d35400;
@@ -99,6 +136,40 @@
       text-align: center;
       margin: 20px 0;
     }
+    .order-summary {
+      margin-top: 20px;
+      border-top: 2px solid #d35400;
+      padding-top: 15px;
+    }
+    .order-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .order-total {
+      font-weight: bold;
+      font-size: 1.2em;
+      margin-top: 10px;
+      border-top: 1px dashed #ddd;
+      padding-top: 10px;
+    }
+    .category-filter {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .filter-btn {
+      background-color: #eee;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+    .filter-btn.active {
+      background-color: #d35400;
+      color: white;
+    }
   </style>
 </head>
 <body>
@@ -108,7 +179,107 @@
     
     <h2>Notre Menu</h2>
     
-    <!-- قائمة الطعام هنا -->
+    <div class="category-filter">
+      <button class="filter-btn active" data-category="all">Tout</button>
+      <button class="filter-btn" data-category="entrees">Entrées</button>
+      <button class="filter-btn" data-category="plats">Plats Principaux</button>
+      <button class="filter-btn" data-category="desserts">Desserts</button>
+      <button class="filter-btn" data-category="boissons">Boissons</button>
+    </div>
+    
+    <div class="menu-section" id="entrees">
+      <h3>Entrées</h3>
+      
+      <div class="menu-item" data-category="entrees">
+        <div class="item-info">
+          <div class="item-name">Salade Marocaine</div>
+          <div class="item-desc">Tomates, concombres, oignons et poivrons avec des herbes</div>
+        </div>
+        <div class="item-price">25 Dhs</div>
+        <div class="item-controls">
+          <button class="quantity-btn minus" data-item="Salade Marocaine">-</button>
+          <input type="number" class="quantity" data-item="Salade Marocaine" min="0" value="0">
+          <button class="quantity-btn plus" data-item="Salade Marocaine">+</button>
+        </div>
+      </div>
+      
+      <div class="menu-item" data-category="entrees">
+        <div class="item-info">
+          <div class="item-name">Briouates</div>
+          <div class="item-desc">Feuilles de brick farcies à la viande et aux amandes</div>
+        </div>
+        <div class="item-price">30 Dhs</div>
+        <div class="item-controls">
+          <button class="quantity-btn minus" data-item="Briouates">-</button>
+          <input type="number" class="quantity" data-item="Briouates" min="0" value="0">
+          <button class="quantity-btn plus" data-item="Briouates">+</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="menu-section" id="plats">
+      <h3>Plats Principaux</h3>
+      
+      <div class="menu-item" data-category="plats">
+        <div class="item-info">
+          <div class="item-name">Tajine Kefta</div>
+          <div class="item-desc">Boulettes de viande dans une sauce tomate avec œufs</div>
+        </div>
+        <div class="item-price">65 Dhs</div>
+        <div class="item-controls">
+          <button class="quantity-btn minus" data-item="Tajine Kefta">-</button>
+          <input type="number" class="quantity" data-item="Tajine Kefta" min="0" value="0">
+          <button class="quantity-btn plus" data-item="Tajine Kefta">+</button>
+        </div>
+      </div>
+      
+      <div class="menu-item" data-category="plats">
+        <div class="item-info">
+          <div class="item-name">Couscous Royal</div>
+          <div class="item-desc">Couscous avec légumes et viandes variées</div>
+        </div>
+        <div class="item-price">80 Dhs</div>
+        <div class="item-controls">
+          <button class="quantity-btn minus" data-item="Couscous Royal">-</button>
+          <input type="number" class="quantity" data-item="Couscous Royal" min="0" value="0">
+          <button class="quantity-btn plus" data-item="Couscous Royal">+</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="menu-section" id="desserts">
+      <h3>Desserts</h3>
+      
+      <div class="menu-item" data-category="desserts">
+        <div class="item-info">
+          <div class="item-name">Pastilla au Lait</div>
+          <div class="item-desc">Feuilles de brick garnies de crème pâtissière et amandes</div>
+        </div>
+        <div class="item-price">35 Dhs</div>
+        <div class="item-controls">
+          <button class="quantity-btn minus" data-item="Pastilla au Lait">-</button>
+          <input type="number" class="quantity" data-item="Pastilla au Lait" min="0" value="0">
+          <button class="quantity-btn plus" data-item="Pastilla au Lait">+</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="menu-section" id="boissons">
+      <h3>Boissons</h3>
+      
+      <div class="menu-item" data-category="boissons">
+        <div class="item-info">
+          <div class="item-name">Thé à la Menthe</div>
+          <div class="item-desc">Thé vert avec menthe fraîche et sucre</div>
+        </div>
+        <div class="item-price">15 Dhs</div>
+        <div class="item-controls">
+          <button class="quantity-btn minus" data-item="Thé à la Menthe">-</button>
+          <input type="number" class="quantity" data-item="Thé à la Menthe" min="0" value="0">
+          <button class="quantity-btn plus" data-item="Thé à la Menthe">+</button>
+        </div>
+      </div>
+    </div>
     
     <form id="commandeForm">
       <h2>Passer Commande</h2>
@@ -116,7 +287,14 @@
       <label for="table">Numéro de table:</label>
       <input type="number" id="table" min="1" required>
       
-      <!-- حقول اختيار الطعام -->
+      <label for="notes">Notes spéciales (allergies, modifications, etc.):</label>
+      <textarea id="notes" rows="3"></textarea>
+      
+      <div class="order-summary">
+        <h3>Récapitulatif de la Commande</h3>
+        <div id="orderItems"></div>
+        <div class="order-total">Total: <span id="orderTotal">0</span> Dhs</div>
+      </div>
       
       <button type="submit">Confirmer la Commande</button>
       
@@ -145,9 +323,91 @@
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
+    // Prix des articles
+    const itemPrices = {
+      "Salade Marocaine": 25,
+      "Briouates": 30,
+      "Tajine Kefta": 65,
+      "Couscous Royal": 80,
+      "Pastilla au Lait": 35,
+      "Thé à la Menthe": 15
+    };
+
     function showLoading(show) {
       document.getElementById('loading').style.display = show ? 'block' : 'none';
     }
+
+    function updateOrderSummary() {
+      const orderItemsContainer = document.getElementById('orderItems');
+      let total = 0;
+      let itemsHTML = '';
+      
+      // جمع جميع العناصر المطلوبة
+      const quantityInputs = document.querySelectorAll('.quantity');
+      quantityInputs.forEach(input => {
+        const itemName = input.dataset.item;
+        const quantity = parseInt(input.value);
+        
+        if (quantity > 0) {
+          const itemPrice = itemPrices[itemName];
+          const itemTotal = itemPrice * quantity;
+          total += itemTotal;
+          
+          itemsHTML += `
+            <div class="order-item">
+              <span>${itemName} x${quantity}</span>
+              <span>${itemTotal} Dhs</span>
+            </div>
+          `;
+        }
+      });
+      
+      orderItemsContainer.innerHTML = itemsHTML || '<p>Aucun article sélectionné</p>';
+      document.getElementById('orderTotal').textContent = total;
+    }
+
+    // تصفية القائمة حسب الفئة
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        const category = this.dataset.category;
+        document.querySelectorAll('.menu-item').forEach(item => {
+          if (category === 'all' || item.dataset.category === category) {
+            item.style.display = 'flex';
+          } else {
+            item.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    // التحكم في الكميات
+    document.querySelectorAll('.quantity-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const itemName = this.dataset.item;
+        const input = document.querySelector(`.quantity[data-item="${itemName}"]`);
+        let value = parseInt(input.value);
+        
+        if (this.classList.contains('plus')) {
+          value++;
+        } else if (this.classList.contains('minus') && value > 0) {
+          value--;
+        }
+        
+        input.value = value;
+        updateOrderSummary();
+      });
+    });
+
+    // تحديث عند تغيير الكمية يدويا
+    document.querySelectorAll('.quantity').forEach(input => {
+      input.addEventListener('change', function() {
+        if (this.value < 0) this.value = 0;
+        updateOrderSummary();
+      });
+    });
 
     document.getElementById('commandeForm').addEventListener('submit', async function(e) {
       e.preventDefault();
@@ -155,10 +415,31 @@
       // جمع بيانات الطلب
       const orderData = {
         table: document.getElementById('table').value,
-        commandes: [...], // قائمة الأطباق المختارة
+        notes: document.getElementById('notes').value,
+        commandes: [],
+        total: parseInt(document.getElementById('orderTotal').textContent),
         statut: "en attente",
         timestamp: firebase.database.ServerValue.TIMESTAMP
       };
+
+      // إضافة العناصر المطلوبة
+      const quantityInputs = document.querySelectorAll('.quantity');
+      quantityInputs.forEach(input => {
+        const quantity = parseInt(input.value);
+        if (quantity > 0) {
+          orderData.commandes.push({
+            item: input.dataset.item,
+            quantity: quantity,
+            price: itemPrices[input.dataset.item]
+          });
+        }
+      });
+
+      // التحقق من وجود طلبات
+      if (orderData.commandes.length === 0) {
+        alert("Veuillez sélectionner au moins un article");
+        return;
+      }
 
       showLoading(true);
       
@@ -166,19 +447,33 @@
         const newOrderRef = database.ref('commandes').push();
         await newOrderRef.set(orderData);
         
-        document.getElementById('confirmation').textContent = 
-          `Commande confirmée pour la table ${orderData.table}!`;
+        document.getElementById('confirmation').innerHTML = `
+          <h3>Commande confirmée!</h3>
+          <p>Table: ${orderData.table}</p>
+          <p>Numéro de commande: ${newOrderRef.key}</p>
+          <p>Total: ${orderData.total} Dhs</p>
+        `;
         document.getElementById('confirmation').style.display = 'block';
         
         // إعادة تعيين النموذج
         this.reset();
+        document.querySelectorAll('.quantity').forEach(input => input.value = 0);
+        updateOrderSummary();
+        
+        // إخفاء التأكيد بعد 10 ثواني
+        setTimeout(() => {
+          document.getElementById('confirmation').style.display = 'none';
+        }, 10000);
       } catch (error) {
         console.error("Erreur:", error);
-        alert("Erreur: " + error.message);
+        alert("Une erreur s'est produite: " + error.message);
       } finally {
         showLoading(false);
       }
     });
+
+    // تحديث الملخص عند التحميل
+    updateOrderSummary();
   </script>
 </body>
 </html>
